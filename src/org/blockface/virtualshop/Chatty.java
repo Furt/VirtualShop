@@ -1,7 +1,6 @@
 package org.blockface.virtualshop;
 
 import java.util.logging.Logger;
-import org.blockface.virtualshop.managers.EconomyManager;
 import org.blockface.virtualshop.objects.Offer;
 import org.blockface.virtualshop.objects.Transaction;
 import org.blockface.virtualshop.util.ItemDb;
@@ -91,7 +90,7 @@ public class Chatty
 
   public static String FormatPrice(double price)
   {
-    return ChatColor.YELLOW + EconomyManager.getMethod().format(price) + ChatColor.WHITE;
+    return ChatColor.YELLOW + plugin.economy.getMethod().format(price) + ChatColor.WHITE;
   }
 
   public static String FormatBuyer(String buyer)

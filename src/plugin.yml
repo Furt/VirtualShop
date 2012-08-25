@@ -1,9 +1,8 @@
-﻿author: SwearWord
+authors: [SwearWord, furt]
 description: Allows players to buy and sell goods on a VirtualShop.
 main: org.blockface.virtualshop.VirtualShop
 name: VirtualShop
-url: http://blockface.org/
-version: b115
+version: 1.0
 commands:
     buy:
         description: Buy goods for sale on the VirtualShop.

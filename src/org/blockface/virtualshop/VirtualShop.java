@@ -1,56 +1,64 @@
 package org.blockface.virtualshop;
 
 import java.io.IOException;
+import java.util.logging.Level;
 
-import org.blockface.virtualshop.commands.Buy;
-import org.blockface.virtualshop.commands.Cancel;
-import org.blockface.virtualshop.commands.Find;
-import org.blockface.virtualshop.commands.Help;
-import org.blockface.virtualshop.commands.Sales;
-import org.blockface.virtualshop.commands.Sell;
-import org.blockface.virtualshop.commands.Stock;
-import org.blockface.virtualshop.events.ServerEvents;
+import org.blockface.virtualshop.commands.*;
 import org.blockface.virtualshop.managers.ConfigManager;
-import org.blockface.virtualshop.managers.DatabaseManager;
 import org.blockface.virtualshop.util.ItemDb;
-import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
-public class VirtualShop extends JavaPlugin
-{
-  public void onDisable()
-  {
-    DatabaseManager.Close();
-  }
+public class VirtualShop extends JavaPlugin {
 
-  public void onEnable() {
-    Chatty.Initialize(this);
-    ConfigManager.Initialize(this);
-    DatabaseManager.Initialize();
-    try {
-      ItemDb.load(getDataFolder(), "items.csv");
-    } catch (IOException e) {
-      getPluginLoader().disablePlugin(this);
-      return;
-    }
-    RegisterEvents();
-  }
+	public void onDisable() {
+	}
 
-  private void RegisterEvents()
-  {
-    getServer().getPluginManager().registerEvents(new ServerEvents(), this);
-  }
+	public void onEnable() {
+		Chatty.Initialize(this);
+		ConfigManager.Initialize(this);
+		try {
+			ItemDb.load(getDataFolder(), "items.csv");
+		} catch (IOException e) {
+			getPluginLoader().disablePlugin(this);
+			return;
+		}
+		getCommand("buy").setExecutor(new BuyCommand(this));
+		getCommand("sell").setExecutor(new SellCommand(this));
+		getCommand("find").setExecutor(new FindCommand(this));
+		getCommand("sales").setExecutor(new SalesCommand(this));
+		getCommand("stock").setExecutor(new StockCommand(this));
+		getCommand("virtualshop").setExecutor(new HelpCommand(this));
+		getCommand("cancel").setExecutor(new CancelCommand(this));
+	}
+	
+	public boolean console(CommandSender sender) {
+		if (sender instanceof Player) {
+			return false;
+		}
+		return true;
+	}
+	
+	public boolean hasPerm(CommandSender sender, String label,
+			boolean consoleUse) {
+		boolean perm = sender.hasPermission("virtualshop." + label);
 
-  public boolean onCommand(CommandSender sender, Command command, String label, String[] args)
-  {
-    if (label.equalsIgnoreCase("sell")) Sell.Execute(sender, args);
-    if (label.equalsIgnoreCase("buy")) Buy.Execute(sender, args);
-    if (label.equalsIgnoreCase("cancel")) Cancel.Execute(sender, args);
-    if (label.equalsIgnoreCase("stock")) Stock.Execute(sender, args);
-    if (label.equalsIgnoreCase("sales")) Sales.Execute(sender, args);
-    if (label.equalsIgnoreCase("find")) Find.Execute(sender, args);
-    if (label.equalsIgnoreCase("vs")) Help.Execute(sender);
-    return true;
-  }
+		if (this.console(sender)) {
+			if (consoleUse)
+				return true;
+
+			this.logger(Level.INFO, "This command cannot be used in console.");
+			return false;
+		} else {
+			if (sender.isOp())
+				return true;
+
+			return perm;
+		}
+	}
+	
+	public void logger(Level l, String s) {
+		this.getLogger().log(l, s);
+	}
 }
