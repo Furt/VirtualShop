@@ -2,6 +2,7 @@ package org.blockface.virtualshop.commands;
 
 import org.blockface.virtualshop.Chatty;
 import org.blockface.virtualshop.VirtualShop;
+import org.blockface.virtualshop.managers.DatabaseManager;
 import org.blockface.virtualshop.objects.Offer;
 import org.blockface.virtualshop.util.InventoryManager;
 import org.blockface.virtualshop.util.ItemDb;
@@ -21,33 +22,34 @@ public class CancelCommand implements CommandExecutor {
 	@Override
 	public boolean onCommand(CommandSender sender, Command cmd, String label,
 			String[] args) {
-		if (!(sender instanceof Player)) {
-			Chatty.DenyConsole(sender);
-			return true;
-		}
-		if (!sender.hasPermission("virtualshop.cancel")) {
+		if (plugin.hasPerm(sender, label, false)) {
 			Chatty.NoPermissions(sender);
 			return true;
 		}
+
 		if (args.length < 1) {
 			Chatty.SendError(sender, "You must specify an item.");
 			return true;
 		}
+
 		ItemStack item = ItemDb.get(args[0], 0);
 		if (item == null) {
 			Chatty.WrongItem(sender, args[0]);
 			return true;
 		}
+
 		Player player = (Player) sender;
 		int total = 0;
 		for (Offer o : DatabaseManager.GetSellerOffers(player.getName(), item)) {
 			total += o.item.getAmount();
 		}
+
 		if (total == 0) {
 			Chatty.SendError(sender, "You do not have any " + args[0]
 					+ " for sale.");
 			return true;
 		}
+
 		item.setAmount(total);
 		new InventoryManager(player).addItem(item);
 		DatabaseManager.RemoveSellerOffers(player, item);

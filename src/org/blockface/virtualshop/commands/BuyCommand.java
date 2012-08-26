@@ -2,8 +2,11 @@ package org.blockface.virtualshop.commands;
 
 import java.util.List;
 
+import net.milkbowl.vault.economy.Economy;
+
 import org.blockface.virtualshop.Chatty;
 import org.blockface.virtualshop.VirtualShop;
+import org.blockface.virtualshop.managers.DatabaseManager;
 import org.blockface.virtualshop.objects.Offer;
 import org.blockface.virtualshop.objects.Transaction;
 import org.blockface.virtualshop.util.InventoryManager;
@@ -25,18 +28,16 @@ public class BuyCommand implements CommandExecutor {
 	@Override
 	public boolean onCommand(CommandSender sender, Command cmd, String label,
 			String[] args) {
-		if (!(sender instanceof Player)) {
-			Chatty.DenyConsole(sender);
-			return true;
-		}
-		if (!sender.hasPermission("virtualshop.buy")) {
+		if (plugin.hasPerm(sender, label, false)) {
 			Chatty.NoPermissions(sender);
 			return true;
 		}
+
 		if (args.length < 2) {
 			Chatty.SendError(sender, "Proper usage is /buy <amount> <item>");
 			return true;
 		}
+
 		int amount = Numbers.ParseInteger(args[0]).intValue();
 		if (amount < 0) {
 			Chatty.NumberFormat(sender);
@@ -58,8 +59,7 @@ public class BuyCommand implements CommandExecutor {
 			return true;
 		}
 		Player player = (Player) sender;
-		Method.MethodAccount account = EconomyManager.getMethod().getAccount(
-				player.getName());
+		Economy account = VirtualShop.economy;
 		int bought = 0;
 		double spent = 0.0D;
 		InventoryManager im = new InventoryManager(player);
@@ -77,8 +77,8 @@ public class BuyCommand implements CommandExecutor {
 					int canbuy = o.item.getAmount();
 					double cost = o.price * canbuy;
 
-					if (!account.hasEnough(cost)) {
-						canbuy = (int) (account.balance() / o.price);
+					if (!account.has(player.getName(), cost)) {
+						canbuy = (int) (account.getBalance(player.getName()) / o.price);
 						cost = canbuy * o.price;
 						if (canbuy < 1) {
 							Chatty.SendError(player, "Ran out of money!");
@@ -87,8 +87,8 @@ public class BuyCommand implements CommandExecutor {
 					}
 					bought += canbuy;
 					spent += cost;
-					account.subtract(cost);
-					EconomyManager.getMethod().getAccount(o.seller).add(cost);
+					account.withdrawPlayer(player.getName(), cost);
+					account.depositPlayer(o.seller, cost);
 					Chatty.SendSuccess(
 							o.seller,
 							Chatty.FormatSeller(player.getName())
@@ -110,8 +110,8 @@ public class BuyCommand implements CommandExecutor {
 					int canbuy = amount - bought;
 					double cost = canbuy * o.price;
 
-					if (!account.hasEnough(cost)) {
-						canbuy = (int) (account.balance() / o.price);
+					if (!account.has(player.getName(), cost)) {
+						canbuy = (int) (account.getBalance(player.getName()) / o.price);
 						cost = canbuy * o.price;
 						if (canbuy < 1) {
 							Chatty.SendError(player, "Ran out of money!");
@@ -120,8 +120,8 @@ public class BuyCommand implements CommandExecutor {
 					}
 					bought += canbuy;
 					spent += cost;
-					account.subtract(cost);
-					EconomyManager.getMethod().getAccount(o.seller).add(cost);
+					account.withdrawPlayer(player.getName(), cost);
+					account.depositPlayer(o.seller, cost);
 					Chatty.SendSuccess(
 							o.seller,
 							Chatty.FormatSeller(player.getName())

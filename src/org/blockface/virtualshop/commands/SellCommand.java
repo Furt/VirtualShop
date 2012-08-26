@@ -5,6 +5,7 @@ import java.util.Iterator;
 import org.blockface.virtualshop.Chatty;
 import org.blockface.virtualshop.VirtualShop;
 import org.blockface.virtualshop.managers.ConfigManager;
+import org.blockface.virtualshop.managers.DatabaseManager;
 import org.blockface.virtualshop.objects.Offer;
 import org.blockface.virtualshop.util.InventoryManager;
 import org.blockface.virtualshop.util.ItemDb;
@@ -25,25 +26,24 @@ public class SellCommand implements CommandExecutor {
 	@Override
 	public boolean onCommand(CommandSender sender, Command cmd, String label,
 			String[] args) {
-		if (!(sender instanceof Player)) {
-			Chatty.DenyConsole(sender);
-			return true;
-		}
-		if (!sender.hasPermission("virtualshop.sell")) {
+		if (plugin.hasPerm(sender, label, false)) {
 			Chatty.NoPermissions(sender);
 			return true;
 		}
+
 		if (args.length < 3) {
 			Chatty.SendError(sender,
 					"Proper usage is /sell <amount> <item> <price>");
 			return true;
 		}
+
 		float price = Numbers.ParseFloat(args[2]).floatValue();
 		int amount = Numbers.ParseInteger(args[0]).intValue();
 		if ((amount < 0) || (price < 0.0F)) {
 			Chatty.NumberFormat(sender);
 			return true;
 		}
+
 		Player player = (Player) sender;
 		ItemStack item = ItemDb.get(args[1], amount);
 		if (args[1].equalsIgnoreCase("hand")) {
@@ -51,10 +51,12 @@ public class SellCommand implements CommandExecutor {
 					player.getItemInHand().getDurability());
 			args[1] = ItemDb.reverseLookup(item);
 		}
+
 		if (item == null) {
 			Chatty.WrongItem(sender, args[1]);
 			return true;
 		}
+
 		InventoryManager im = new InventoryManager(player);
 		if (!im.contains(item, true, true)) {
 			Chatty.SendError(
@@ -65,6 +67,7 @@ public class SellCommand implements CommandExecutor {
 							+ Chatty.FormatItem(args[1]));
 			return true;
 		}
+
 		im.remove(item, true, true);
 		int a = 0;
 		Offer o;
@@ -76,6 +79,7 @@ public class SellCommand implements CommandExecutor {
 		item.setAmount(item.getAmount() + a);
 		o = new Offer(player.getName(), item, price);
 		DatabaseManager.AddOffer(o);
+
 		if (ConfigManager.BroadcastOffers().booleanValue()) {
 			Chatty.BroadcastOffer(o);
 			return true;
