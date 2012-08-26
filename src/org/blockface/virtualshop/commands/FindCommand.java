@@ -24,7 +24,7 @@ public class FindCommand implements CommandExecutor {
 	@Override
 	public boolean onCommand(CommandSender sender, Command cmd, String label,
 			String[] args) {
-		if (plugin.hasPerm(sender, label, true)) {
+		if (!plugin.hasPerm(sender, label, true)) {
 			Chatty.NoPermissions(sender);
 			return true;
 		}

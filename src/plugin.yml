@@ -3,6 +3,7 @@ description: Allows players to buy and sell goods on a VirtualShop.
 main: org.blockface.virtualshop.VirtualShop
 name: VirtualShop
 version: 1.0
+database: true
 commands:
     buy:
         description: Buy goods for sale on the VirtualShop.
@@ -22,25 +23,6 @@ commands:
     sales:
         description: See sales that have been made.
         usage: /sales [player] [page]
-    vs:
+    virtualshop:
         description: Displays help.
-        usage: /vs
-permissions:
-    virtualshop.sell:
-        description: Allow usage of /sell
-        default: true
-    virtualshop.buy:
-        description: Allow usage of /buy
-        default: true
-    virtualshop.find:
-        description: Allow usage of /find
-        default: true
-    virtualshop.cancel:
-        description: Allow usage of /cancel
-        default: true
-    virtualshop.stock:
-        description: Allow usage of /stock
-        default: true
-    virtualshop.sales:
-        description: Allow usage of /sales
-        default: true
+        usage: /virtualshop

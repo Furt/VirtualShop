@@ -1,6 +1,5 @@
 package org.blockface.virtualshop.managers;
 
-import java.sql.ResultSet;
 import java.util.List;
 
 import org.blockface.virtualshop.VirtualShop;
@@ -18,8 +17,7 @@ public class DatabaseManager {
 				.eq("item", item.getTypeId())
 				.eq("damage", item.getDurability())
 				.eq("amount", item.getAmount()).findList();
-		ResultSet result = (ResultSet) stock;
-		return Offer.ListOffers(result);
+		return Offer.ListOffers(stock);
 	}
 
 	public static void DeleteItem(int id) {
@@ -59,23 +57,20 @@ public class DatabaseManager {
 				.eq("item", item.getTypeId())
 				.eq("damage", item.getDurability())
 				.eq("amount", item.getAmount()).findList();
-		ResultSet result = (ResultSet) stock;
-		return Offer.ListOffers(result);
+		return Offer.ListOffers(stock);
 	}
 
 	public static List<Transaction> GetTransactions() {
 		List<TransactionsTable> tt = VirtualShop.es.find(
 				TransactionsTable.class).findList();
-		ResultSet result = (ResultSet) tt;
-		return Transaction.ListTransactions(result);
+		return Transaction.ListTransactions(tt);
 	}
 
 	public static List<Transaction> GetTransactions(String action, String search) {
 		List<TransactionsTable> tt = VirtualShop.es
 				.find(TransactionsTable.class).where().ieq(action, search)
 				.findList();
-		ResultSet result = (ResultSet) tt;
-		return Transaction.ListTransactions(result);
+		return Transaction.ListTransactions(tt);
 	}
 
 	public static void AddOffer(Offer o) {
@@ -91,15 +86,13 @@ public class DatabaseManager {
 	public static List<Offer> GetBestPrices() {
 		List<StockTable> stock = VirtualShop.es.find(StockTable.class).where()
 				.orderBy("price desc").findList();
-		ResultSet result = (ResultSet) stock;
-		return Offer.ListOffers(result);
+		return Offer.ListOffers(stock);
 	}
 
 	public static List<Offer> SearchBySeller(String seller) {
 		List<StockTable> stock = VirtualShop.es.find(StockTable.class).where()
 				.ieq("seller", seller).findList();
-		ResultSet result = (ResultSet) stock;
-		return Offer.ListOffers(result);
+		return Offer.ListOffers(stock);
 	}
 
 	public static List<Offer> GetSellerOffers(String name, ItemStack item) {
@@ -107,8 +100,7 @@ public class DatabaseManager {
 				.ieq("seller", name).eq("item", item.getTypeId())
 				.eq("damage", item.getDurability())
 				.eq("amount", item.getAmount()).findList();
-		ResultSet result = (ResultSet) stock;
-		return Offer.ListOffers(result);
+		return Offer.ListOffers(stock);
 	}
 
 	public static void AddOffer(String name, ItemStack item, float price) {

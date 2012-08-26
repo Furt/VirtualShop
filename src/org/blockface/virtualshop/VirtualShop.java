@@ -31,7 +31,6 @@ public class VirtualShop extends JavaPlugin {
 	}
 
 	public void onEnable() {
-		es = getDatabase();
 		Chatty.Initialize(this);
 		ConfigManager.Initialize(this);
 		try {
@@ -49,6 +48,7 @@ public class VirtualShop extends JavaPlugin {
 		getCommand("stock").setExecutor(new StockCommand(this));
 		getCommand("virtualshop").setExecutor(new HelpCommand());
 		getCommand("cancel").setExecutor(new CancelCommand(this));
+		es = getDatabase();
 	}
 
 	// Set up Vault economy

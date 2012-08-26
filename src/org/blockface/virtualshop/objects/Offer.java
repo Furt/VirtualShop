@@ -1,9 +1,9 @@
 package org.blockface.virtualshop.objects;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+
+import org.blockface.virtualshop.persistance.StockTable;
 import org.bukkit.inventory.ItemStack;
 
 public class Offer {
@@ -24,17 +24,13 @@ public class Offer {
 		this.price = price;
 	}
 
-	public static List<Offer> ListOffers(ResultSet result) {
+	public static List<Offer> ListOffers(List<StockTable> st) {
 		List<Offer> ret = new ArrayList<Offer>();
-		try {
-			while (result.next()) {
-				Offer o = new Offer(result.getString("seller"),
-						result.getInt("item"), (short) result.getInt("damage"),
-						result.getDouble("price"), result.getInt("amount"));
-				o.id = result.getInt("id");
-				ret.add(o);
-			}
-		} catch (SQLException e) {
+		for (StockTable s1 : st) {
+			Offer o = new Offer(s1.getSeller(), s1.getItem(),
+					(short) s1.getDamage(), s1.getPrice(), s1.getAmount());
+			o.id = s1.getId();
+			ret.add(o);
 		}
 		return ret;
 	}

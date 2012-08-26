@@ -22,17 +22,17 @@ public class StockCommand implements CommandExecutor {
 	@Override
 	public boolean onCommand(CommandSender sender, Command cmd, String label,
 			String[] args) {
-		if(plugin.hasPerm(sender, label, true)) {
+		if (!plugin.hasPerm(sender, label, true)) {
 			Chatty.NoPermissions(sender);
 			return true;
 		}
-		
+
 		int start = 1;
 
 		List<Offer> offers = DatabaseManager.GetBestPrices();
 		if (args.length > 0)
 			start = Numbers.ParseInteger(args[0]).intValue();
-		
+
 		if (start < 0) {
 			String seller = args[0];
 			if (args.length > 1)
@@ -50,7 +50,7 @@ public class StockCommand implements CommandExecutor {
 			start = 0;
 			page = 1;
 		}
-		
+
 		sender.sendMessage(ChatColor.DARK_GRAY + "---------------"
 				+ ChatColor.GRAY + "Page (" + ChatColor.RED + page
 				+ ChatColor.GRAY + " of " + ChatColor.RED + pages

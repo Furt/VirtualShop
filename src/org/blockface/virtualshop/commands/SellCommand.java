@@ -26,7 +26,7 @@ public class SellCommand implements CommandExecutor {
 	@Override
 	public boolean onCommand(CommandSender sender, Command cmd, String label,
 			String[] args) {
-		if (plugin.hasPerm(sender, label, false)) {
+		if (!plugin.hasPerm(sender, label, false)) {
 			Chatty.NoPermissions(sender);
 			return true;
 		}
